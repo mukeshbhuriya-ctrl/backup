@@ -35,6 +35,12 @@ pg_dump ^
 -d %DB_NAME% ^
 -f "%BACKUP_FILE%"
 
+:: Create secondary backup folder
+if not exist "C:\DMSBackup" mkdir "C:\DMSBackup"
+
+:: Copy latest backup to C drive
+copy "%BACKUP_FILE%" "C:\DMSBackup\"
+
 if %ERRORLEVEL% EQU 0 (
     echo.
     echo Backup completed successfully.
