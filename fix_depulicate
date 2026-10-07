@@ -1,0 +1,24 @@
+# Fix Duplicate document_number
+WITH numbered_docs AS (
+  SELECT id, 
+         ROW_NUMBER() OVER(PARTITION BY company_id, document_number ORDER BY "createdAt" ASC) as row_num
+  FROM document_master
+)
+UPDATE document_master
+SET document_number = 'DUP-' || numbered_docs.row_num || '-' || document_master.document_number
+FROM numbered_docs
+WHERE document_master.id = numbered_docs.id
+  AND numbered_docs.row_num > 1;
+
+
+
+# Fix Duplicate serial_no (Since it is an Int @default(0))
+WITH numbered_serials AS (
+  SELECT id, 
+         ROW_NUMBER() OVER(PARTITION BY company_id ORDER BY "createdAt" ASC) as new_serial
+  FROM document_master
+)
+UPDATE document_master
+SET serial_no = numbered_serials.new_serial
+FROM numbered_serials
+WHERE document_master.id = numbered_serials.id;
