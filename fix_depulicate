@@ -22,3 +22,10 @@ UPDATE document_master
 SET serial_no = numbered_serials.new_serial
 FROM numbered_serials
 WHERE document_master.id = numbered_serials.id;
+
+
+
+SELECT company_id, document_number, COUNT(*) as duplicate_count
+FROM document_master
+GROUP BY company_id, document_number
+HAVING COUNT(*) > 1;
